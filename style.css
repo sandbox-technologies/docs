@@ -1,0 +1,447 @@
+/* Inspector Docs Custom Styling
+   Matches the Inspector website visual identity */
+
+/* =============================================================================
+   CSS Variables - Inspector Brand Colors
+   ============================================================================= */
+:root {
+  --inspector-blue: #0084FF;
+  --inspector-blue-hover: #0070DD;
+  --inspector-dark-bg: #0a0a0a;
+  --inspector-light-bg: #ffffff;
+  --inspector-gray-50: #f9fafb;
+  --inspector-gray-200: #e5e7eb;
+  --inspector-gray-500: #6b7280;
+  --inspector-text-dark: #0a0a0a;
+  --inspector-text-light: #fafafa;
+}
+
+/* =============================================================================
+   Typography Enhancements
+   ============================================================================= */
+
+/* Headings - Enhanced styling */
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Page title styling */
+#page-title {
+  letter-spacing: -0.025em;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+/* Prevent title from breaking on small screens */
+h1 {
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* =============================================================================
+   Navigation Enhancements
+   ============================================================================= */
+
+/* Navbar styling */
+#navbar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Show site name next to logo */
+.nav-logo::after {
+  content: "Inspector";
+  margin-left: 0.5rem;
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
+}
+
+/* Sidebar group headers */
+.sidebar-group-header {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Active sidebar item - override blue with black/gray */
+.sidebar-group a[data-active="true"],
+.sidebar-group a[data-active="true"] span,
+.sidebar-group a[data-active="true"] p,
+.sidebar-group a[data-active="true"] *,
+[data-active="true"],
+[data-active="true"] * {
+  font-weight: 500 !important;
+  background-color: #f3f4f6 !important;
+  color: #0a0a0a !important;
+}
+
+.dark .sidebar-group a[data-active="true"],
+.dark .sidebar-group a[data-active="true"] span,
+.dark .sidebar-group a[data-active="true"] p,
+.dark .sidebar-group a[data-active="true"] *,
+.dark [data-active="true"],
+.dark [data-active="true"] * {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f9fafb !important;
+}
+
+/* Override Mintlify's primary/accent color in sidebar */
+:root {
+  --sidebar-active-color: #0a0a0a;
+  --sidebar-active-bg: #f3f4f6;
+}
+
+/* Try targeting via aria or other attributes */
+nav a[aria-current="page"],
+nav a[aria-current="page"] *,
+aside a[aria-current="page"],
+aside a[aria-current="page"] * {
+  color: #0a0a0a !important;
+  background-color: #f3f4f6 !important;
+}
+
+.dark nav a[aria-current="page"],
+.dark nav a[aria-current="page"] *,
+.dark aside a[aria-current="page"],
+.dark aside a[aria-current="page"] * {
+  color: #f9fafb !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Override text-primary class used by Mintlify */
+.text-primary,
+.sidebar-group .text-primary,
+aside .text-primary {
+  color: #0a0a0a !important;
+}
+
+.dark .text-primary,
+.dark .sidebar-group .text-primary,
+.dark aside .text-primary {
+  color: #f9fafb !important;
+}
+
+/* Override any inline styles or CSS variables for primary color in sidebar */
+#sidebar a[data-active="true"],
+#sidebar [data-active="true"] {
+  color: #0a0a0a !important;
+  background-color: #f3f4f6 !important;
+}
+
+.dark #sidebar a[data-active="true"],
+.dark #sidebar [data-active="true"] {
+  color: #f9fafb !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Reduce sidebar item border radius */
+.sidebar-group a {
+  border-radius: 0.25rem !important;
+}
+
+/* =============================================================================
+   Cards and Components
+   ============================================================================= */
+
+/* Card hover effects */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Reduce card border radius */
+.card,
+[class*="Card_card"],
+[class*="card"] {
+  border-radius: 0.5rem !important;
+}
+
+/* Reduce card internal padding */
+[class*="Card_card"] {
+  padding: 0.375rem 0.5rem !important;
+  position: relative;
+}
+
+[class*="Card_card"] > div {
+  gap: 0.125rem !important;
+}
+
+/* Add arrow on the right side of cards */
+[class*="Card_card"]::after {
+  content: "→";
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.875rem;
+  color: #6b7280;
+  transition: transform 0.15s ease;
+}
+
+[class*="Card_card"]:hover::after {
+  transform: translateY(-50%) translateX(2px);
+}
+
+.dark [class*="Card_card"]::after {
+  color: #9ca3af;
+}
+
+/* Callout styling */
+.callout {
+  border-radius: 0.5rem;
+}
+
+/* Override Tip callout to use grey instead of green */
+[data-callout="tip"] {
+  --callout-color: #6b7280 !important;
+  border-color: #e5e7eb !important;
+  background-color: #f9fafb !important;
+}
+
+[data-callout="tip"] svg {
+  color: #6b7280 !important;
+}
+
+.dark [data-callout="tip"] {
+  border-color: rgba(107, 114, 128, 0.3) !important;
+  background-color: rgba(107, 114, 128, 0.1) !important;
+}
+
+.dark [data-callout="tip"] svg {
+  color: #9ca3af !important;
+}
+
+/* Code blocks */
+.code-block {
+  border-radius: 0.5rem;
+  border: 1px solid var(--inspector-gray-200);
+}
+
+.dark .code-block {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* =============================================================================
+   Buttons and Interactive Elements
+   ============================================================================= */
+
+
+
+/* =============================================================================
+   Links and Anchors
+   ============================================================================= */
+
+/* Link hover effects */
+.link {
+  transition: color 0.15s ease;
+}
+
+/* Anchor links in sidebar */
+.nav-anchor {
+  transition: all 0.15s ease;
+}
+
+.nav-anchor:hover {
+  transform: translateX(2px);
+}
+
+/* =============================================================================
+   Footer Styling
+   ============================================================================= */
+
+footer {
+  border-top: 1px solid var(--inspector-gray-200);
+}
+
+.dark footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* =============================================================================
+   Selection Styling (matches website)
+   ============================================================================= */
+
+::selection {
+  background-color: rgba(0, 132, 255, 0.15);
+}
+
+.dark ::selection {
+  background-color: rgba(0, 132, 255, 0.25);
+}
+
+/* =============================================================================
+   Scrollbar Styling
+   ============================================================================= */
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--inspector-gray-200);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--inspector-gray-500);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* =============================================================================
+   Content Area Enhancements
+   ============================================================================= */
+
+/* MDX content styling */
+.mdx-content {
+  line-height: 1.75;
+}
+
+/* Improved paragraph spacing */
+.mdx-content p {
+  margin-bottom: 1.25rem;
+}
+
+/* List styling */
+.mdx-content ul,
+.mdx-content ol {
+  margin-bottom: 1.25rem;
+}
+
+.mdx-content li {
+  margin-bottom: 0.5rem;
+}
+
+/* =============================================================================
+   Table Styling
+   ============================================================================= */
+
+table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+th {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* =============================================================================
+   Accordion and Expandable Styling
+   ============================================================================= */
+
+.accordion {
+  border-radius: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.expandable {
+  transition: all 0.15s ease;
+}
+
+/* =============================================================================
+   API Playground Enhancements
+   ============================================================================= */
+
+#api-playground-input {
+  border-radius: 0.375rem;
+}
+
+.method-pill {
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+/* =============================================================================
+   Tabs Styling
+   ============================================================================= */
+
+.tabs {
+  border-radius: 0.5rem;
+}
+
+.tab {
+  transition: all 0.15s ease;
+}
+
+/* =============================================================================
+   Steps Component
+   ============================================================================= */
+
+.steps {
+  border-left-width: 2px;
+}
+
+.step {
+  transition: all 0.15s ease;
+}
+
+/* =============================================================================
+   Frame Component (for images)
+   ============================================================================= */
+
+.frame {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+/* =============================================================================
+   Search Input
+   ============================================================================= */
+
+#search-input {
+  border-radius: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+#search-input:focus {
+  box-shadow: 0 0 0 2px rgba(0, 132, 255, 0.2);
+}
+
+/* =============================================================================
+   Dark Mode Specific Enhancements
+   ============================================================================= */
+
+.dark #content-area {
+  background-color: var(--inspector-dark-bg);
+}
+
+.dark #sidebar {
+  background-color: var(--inspector-dark-bg);
+}
+
+/* =============================================================================
+   Smooth Transitions
+   ============================================================================= */
+
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

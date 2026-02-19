@@ -1,0 +1,61 @@
+---
+title: ".inspector.json"
+description: "Configure project setup and run commands"
+---
+
+Place `.inspector.json` at your repository root to configure how Inspector runs your project.
+
+<Info>
+  Optional — Inspector auto-detects most projects without this file.
+</Info>
+
+## Why Use It?
+
+The `.inspector.json` file lets teams share setup commands across the organization. When this file exists in a repository, Inspector uses it as the project's setup configuration.
+
+This is especially useful for onboarding—designers and other team members can open any project in Inspector and it will automatically know how to install dependencies and start the dev server. No terminal knowledge required.
+
+## Simple Project
+
+```json
+{
+  "setup": "npm install",
+  "run": "npm run dev"
+}
+```
+
+## Fields
+
+<ParamField body="setup" type="string" required>
+  Command to install dependencies. Runs once when project opens.
+</ParamField>
+
+<ParamField body="run" type="string" required>
+  Command to start dev server.
+</ParamField>
+
+<ParamField body="build" type="string">
+  Production build command (optional).
+</ParamField>
+
+<ParamField body="htmlEntry" type="string">
+  Main HTML file for static projects.
+</ParamField>
+
+<ParamField body="runtimes.node" type="string">
+  Pin Node.js version (e.g., `"20.11.0"`).
+</ParamField>
+
+## Node.js Version
+
+Inspector bundles runtimes so designers don't need to install developer dependencies. When a project specifies a Node.js version, Inspector automatically starts the dev server in the correct runtime.
+
+```json
+{
+  "setup": "npm install",
+  "run": "npm run dev",
+  "runtimes": { "node": "20.11.0" }
+}
+```
+
+Priority: `.inspector.json` > `.nvmrc` > `.node-version` > `package.json`

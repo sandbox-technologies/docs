@@ -1,0 +1,47 @@
+---
+title: "Project Detection"
+description: "How Inspector auto-detects your project"
+icon: "magnifying-glass"
+---
+
+Inspector scans your project for `package.json` and common framework patterns.
+
+## Supported Frameworks
+
+<CardGroup cols={3}>
+  <Card title="Vite" icon="bolt" />
+  <Card title="Next.js" icon="react" />
+  <Card title="Vue" icon="vuejs" />
+  <Card title="SvelteKit" icon="code" />
+  <Card title="Astro" icon="star" />
+  <Card title="Remix" icon="r" />
+</CardGroup>
+
+## Package Managers
+
+Detected from lock files:
+
+| Lock File | Manager |
+|-----------|---------|
+| `package-lock.json` | npm |
+| `yarn.lock` | Yarn |
+| `pnpm-lock.yaml` | pnpm |
+| `bun.lockb` | Bun |
+
+## When Detection Fails
+
+Create `.inspector.json`:
+
+```json
+{
+  "setup": "npm install",
+  "run": "npm run dev"
+}
+```
+
+## Node.js Version Priority
+
+1. `.inspector.json` runtimes.node
+2. `.nvmrc`
+3. `.node-version`
+4. `package.json` engines

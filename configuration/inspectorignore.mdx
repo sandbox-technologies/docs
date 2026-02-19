@@ -1,0 +1,53 @@
+---
+title: ".inspectorignore"
+description: "Exclude files and folders from Inspector"
+---
+
+Create `.inspectorignore` at your repository root to exclude files and folders from Inspector's view. Works like `.gitignore`.
+
+## Editing Inspector Ignore
+
+You can edit `.inspectorignore` directly in Inspector through the settings.
+
+1. Click your profile icon in the top right
+2. Click **Settings**
+3. Click the **Project Settings** tab
+4. Click the **.inspectorignore** file
+5. Edit the file
+6. Click the **Save** button
+
+<Frame>
+  <video src="https://qjiu9iejnualtydd.public.blob.vercel-storage.com/edit-inspector-rules.mp4" autoPlay muted loop playsInline />
+</Frame>
+
+## Example
+
+```text
+node_modules/
+.env
+*.log
+dist/
+build/
+```
+
+## Use Cases
+
+- **Dependencies** — Exclude `node_modules/` and other package directories
+- **Build artifacts** — Hide `dist/`, `build/`, `.next/` folders
+- **Sensitive files** — Keep `.env` and credentials out of Inspector
+- **Large files** — Exclude assets that slow down project loading
+
+## Syntax
+
+`.inspectorignore` uses the same pattern syntax as `.gitignore`:
+
+| Pattern | Description |
+|---------|-------------|
+| `folder/` | Ignore a directory and its contents |
+| `*.log` | Ignore all files with `.log` extension |
+| `!important.log` | Negate a pattern (don't ignore this file) |
+| `**/temp` | Match `temp` in any directory |
+
+<Callout icon="lightbulb" color="#6b7280">
+  Commit `.inspectorignore` to ensure consistent project views across your team.
+</Callout>
