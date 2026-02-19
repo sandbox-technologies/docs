@@ -50,12 +50,6 @@
               "configuration/inspectorrules",
               "configuration/inspectorignore"
             ]
-          },
-          {
-            "group": "Git & GitHub",
-            "pages": [
-              "git/github"
-            ]
           }
         ]
       }
