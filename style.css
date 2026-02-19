@@ -51,12 +51,33 @@ h1 {
 }
 
 /* Show site name next to logo */
-.nav-logo::after {
+.nav-logo,
+a[href="https://tryinspector.com"]:has(img) {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+/* Hide duplicate dark mode logo in light mode, show only one */
+.nav-logo img:nth-child(2),
+a[href="https://tryinspector.com"] img:nth-child(2) {
+  display: none !important;
+}
+
+.nav-logo::after,
+a[href="https://tryinspector.com"]:has(img)::after {
   content: "Inspector";
-  margin-left: 0.5rem;
   font-weight: 600;
+  margin-bottom: 0.25rem;
   font-size: 1.125rem;
   letter-spacing: -0.02em;
+  color: #0a0a0a;
+  white-space: nowrap;
+}
+
+.dark .nav-logo::after,
+.dark a[href="https://tryinspector.com"]:has(img)::after {
+  color: #fafafa;
 }
 
 /* Sidebar group headers */

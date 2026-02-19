@@ -76,14 +76,15 @@
     }
   },
   "logo": {
-    "light": "/logo/logo.png",
-    "dark": "/logo/logo.png"
+    "light": "/logo/logo.svg",
+    "dark": "/logo/logo.svg",
+    "href": "https://tryinspector.com"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "https://discord.gg/inspector"
+        "href": "https://discord.gg/y7JMaAyqTp"
       }
     ],
     "primary": {
@@ -95,8 +96,8 @@
   "footer": {
     "socials": {
       "x": "https://x.com/tryinspector",
-      "github": "https://github.com/inspector-official",
-      "discord": "https://discord.gg/inspector"
+      "github": "https://github.com/sandbox-technologies/",
+      "discord": "https://discord.gg/y7JMaAyqTp"
     }
   },
   "redirects": [
