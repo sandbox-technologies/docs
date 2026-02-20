@@ -1,0 +1,143 @@
+---
+title: "Publishing Changes"
+description: "Commit changes, manage branches, and create pull requests"
+---
+
+Inspector has two modes for managing your code changes: **Create PR** and **Source Control**. Switch between them using the dropdown at the top of the publish panel.
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video rounded-lg border"
+  src="https://qjiu9iejnualtydd.public.blob.vercel-storage.com/publishOverview.mp4"
+/>
+
+## Create PR
+
+The Create PR mode is designed for designers and non-technical users who want to publish their changes without worrying about git details. It reduces the entire commit-push-PR workflow to a single button.
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video rounded-lg border"
+  src="https://qjiu9iejnualtydd.public.blob.vercel-storage.com/inspectorCreatePR.mp4"
+/>
+
+### How it works
+
+1. Select a **base branch** from the dropdown (defaults to `main`)
+2. Click **Create Pull Request**
+3. Inspector's AI agent automatically commits your changes, pushes them, and opens a pull request
+
+The panel shows the merge direction with an arrow: `base branch ← current branch`.
+
+### PR status
+
+The PR icon on the left indicates the current state:
+
+| Icon | Meaning |
+|------|---------|
+| Gray PR icon | No pull request exists yet |
+| Spinning loader | Checking PR status |
+| Green PR icon | A pull request exists — click to open it on GitHub |
+
+### Updating an existing PR
+
+When a PR already exists for your branch and you make additional changes, the button changes to **Update Pull Request**. Clicking it commits and pushes your new changes to the existing PR.
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video rounded-lg border"
+  src="https://qjiu9iejnualtydd.public.blob.vercel-storage.com/inspectorUpdatePR.mp4"
+/>
+
+### Pulling remote changes
+
+If your teammates have pushed changes to the PR branch, the panel detects incoming commits and offers:
+
+- **Pull PR Changes** — pulls the latest remote commits
+- **Commit & Pull PR Changes** — commits your local changes first, then pulls remote changes and resolves any conflicts
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video rounded-lg border"
+  src="https://qjiu9iejnualtydd.public.blob.vercel-storage.com/pullRemotePR.mp4"
+/>
+
+## Source Control
+
+The Source Control mode gives you full control over your git workflow, similar to what you'd find in VS Code. It's intended for developers who want granular control over commits, staging, and syncing.
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video rounded-lg border"
+  src="https://qjiu9iejnualtydd.public.blob.vercel-storage.com/inspectorSourceControlOpenOnly.mp4"
+/>
+
+### Viewing changes
+
+All modified, added, and deleted files appear in a list. Each file shows:
+
+- A colored icon indicating the change type (modified, added, deleted, renamed)
+- The file name 
+- Buttons to discard changes, or stage/unstage
+
+{/* TODO: Screen Studio GIF — Hover over a changed file to show the inline action buttons (diff, discard, stage). Click "open diff" on one file to demonstrate. */}
+
+### Committing
+
+1. Type a commit message in the input field
+2. Click the **Commit** button, or use the dropdown for additional options:
+   - **Commit** — commit staged changes (or all changes if nothing is staged)
+   - **Commit & Push** — commit and push in one step
+   - **Commit & Sync** — commit, pull remote changes, then push
+
+<video
+  autoPlay
+  muted
+  loop
+  playsInline
+  className="w-full aspect-video rounded-lg border"
+  src="https://qjiu9iejnualtydd.public.blob.vercel-storage.com/showCommitting.mp4"
+/>
+
+### Syncing
+
+The sync status shows incoming and outgoing commits. Use the sync controls to:
+
+- **Push** — push committed changes to the remote
+- **Pull** — pull remote changes
+- **Sync** — pull then push in one operation
+- **Fetch** — check for remote changes without applying them
+
+### Multi-repo support
+
+If your project contains multiple git repositories (e.g. a monorepo with submodules), the Source Control view groups changes by repository with collapsible sections.
+
+## When to use which
+
+| | Create PR | Source Control |
+|---|-----------|---------------|
+| **Best for** | Designers, quick publishing | Developers, detailed control |
+| **Git knowledge needed** | None | Some familiarity helpful |
+| **Commit messages** | Written automatically by the AI agent | You write your own |
+| **Staging files** | Not needed — all changes are included | Stage individual files |
+| **Pull requests** | Created in one click | Create via the PR form view |
+| **Syncing** | Automatic when needed | Manual push, pull, fetch, sync |
+
+<Info>
+  Both modes require a connected GitHub repository. If your project doesn't have one, the panel will prompt you to initialize a repository and publish it to GitHub.
+</Info>

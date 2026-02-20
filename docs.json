@@ -40,7 +40,8 @@
             "group": "Using Inspector",
             "pages": [
               "using-inspector/visual-editor",
-              "using-inspector/chat"
+              "using-inspector/chat",
+              "using-inspector/source-control"
             ]
           },
           {
