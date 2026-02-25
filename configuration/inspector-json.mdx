@@ -1,61 +1,157 @@
 ---
-title: ".inspector.json"
-description: "Configure project setup and run commands"
+title: "inspector.json"
+description: "Configure how Inspector starts your dev environment"
 ---
 
-Place `.inspector.json` at your repository root to configure how Inspector runs your project.
+The `inspector.json` file tells Inspector how to install dependencies and start your dev server. Place it at the root of your project.
 
-<Info>
-  Optional — Inspector auto-detects most projects without this file.
-</Info>
+Inspector auto-detects most projects, but `inspector.json` gives you full control — especially useful for monorepos, multi-service setups, and non-standard configurations.
 
-## Why Use It?
+## Quick start
 
-The `.inspector.json` file lets teams share setup commands across the organization. When this file exists in a repository, Inspector uses it as the project's setup configuration.
-
-This is especially useful for onboarding—designers and other team members can open any project in Inspector and it will automatically know how to install dependencies and start the dev server. No terminal knowledge required.
-
-## Simple Project
+The simplest config has one field:
 
 ```json
 {
-  "setup": "npm install",
-  "run": "npm run dev"
+  "dev": "npm run dev"
 }
 ```
 
-## Fields
+## Let your AI agent generate it
 
-<ParamField body="setup" type="string" required>
-  Command to install dependencies. Runs once when project opens.
-</ParamField>
+If you're not sure what the right config is for your project, copy this prompt and paste it into your AI coding agent (Cursor, Claude Code, Copilot, etc.). The agent will analyze your project and generate the right `inspector.json`.
 
-<ParamField body="run" type="string" required>
-  Command to start dev server.
-</ParamField>
+<Prompt
+  description="Generate an **inspector.json** for this project"
+  actions={["copy", "cursor"]}
+>
+Analyze this project and create an `inspector.json` file at the project root.
 
-<ParamField body="build" type="string">
-  Production build command (optional).
-</ParamField>
+inspector.json tells the Inspector desktop app how to start the dev environment. It has this schema:
 
-<ParamField body="htmlEntry" type="string">
-  Main HTML file for static projects.
-</ParamField>
+Required fields:
+- "dev" (string | string[] | object): The dev server command(s).
+  - string: a single command, e.g. "npm run dev"
+  - string[]: multiple concurrent long-running processes (must also set "url")
+  - object: monorepo target picker — keys are display names, values are dev commands
 
-<ParamField body="runtimes.node" type="string">
-  Pin Node.js version (e.g., `"20.11.0"`).
-</ParamField>
+Optional fields:
+- "install" (string): install/setup command, runs before dev (e.g. "npm install")
+- "url" (string): explicit URL to connect to (bypasses stdout auto-detection)
+- "build" (string): build command
+- "node" (string): Node.js version constraint
+- "htmlEntry" (string): main HTML file for static HTML projects
 
-## Node.js Version
+Rules:
+1. Look at package.json scripts, Makefile, docker-compose.yml, and any existing dev tooling.
+2. If there's a single dev command, use a string.
+3. If the project needs background services (databases, etc.) alongside the dev server, use an array and set "url".
+4. For monorepos with multiple startable apps, use an object with descriptive keys.
+5. Only include "install" if there's a meaningful install step (e.g. "pnpm install").
+6. Only include "url" if the dev command won't print a localhost URL to stdout, or if dev is an array.
+7. Write the file as `inspector.json` at the project root.
+8. Keep it minimal — only include fields that are needed.
+</Prompt>
 
-Inspector bundles runtimes so designers don't need to install developer dependencies. When a project specifies a Node.js version, Inspector automatically starts the dev server in the correct runtime.
+## Scenarios
+
+### Simple project
 
 ```json
 {
-  "setup": "npm install",
-  "run": "npm run dev",
-  "runtimes": { "node": "20.11.0" }
+  "dev": "npm run dev"
 }
 ```
 
-Priority: `.inspector.json` > `.nvmrc` > `.node-version` > `package.json`
+Inspector runs the command, detects the URL from stdout (e.g., `http://localhost:3000`), and connects.
+
+### With an install step
+
+```json
+{
+  "install": "npm install",
+  "dev": "npm run dev"
+}
+```
+
+`install` runs to completion before `dev` starts. It is skipped on dev server restart.
+
+### Explicit URL
+
+```json
+{
+  "dev": "make dev",
+  "url": "http://localhost:3000"
+}
+```
+
+Use `url` when the dev command doesn't print a localhost URL to stdout, or when you want to skip auto-detection entirely. This is common with orchestration tools like `make`, `docker compose`, or custom scripts.
+
+### Multi-service (concurrent processes)
+
+```json
+{
+  "dev": [
+    "docker compose up postgres redis",
+    "cd api && pnpm run dev",
+    "cd web && pnpm run dev"
+  ],
+  "url": "http://localhost:3000"
+}
+```
+
+When `dev` is an array, Inspector spawns all commands concurrently as long-running processes. Use `url` to tell Inspector where to connect — it can't auto-detect from multiple processes.
+
+### Monorepo targets
+
+```json
+{
+  "install": "pnpm install",
+  "dev": {
+    "Web App": "pnpm --filter web dev",
+    "Admin Panel": "pnpm --filter admin dev"
+  }
+}
+```
+
+When `dev` is an object, Inspector shows a picker and runs only the selected target. The keys are display names; the values are the dev commands.
+
+### Existing orchestration
+
+```json
+{
+  "dev": "docker compose up",
+  "url": "http://localhost:3000"
+}
+```
+
+If your project already has a single command that starts everything (e.g., `docker compose`, `foreman`, `overmind`), use it as `dev` and set `url` explicitly.
+
+## Field reference
+
+| Field | Required | Type | Description |
+|-------|----------|------|-------------|
+| `dev` | Yes | `string \| string[] \| object` | The dev server command(s). See scenarios above. |
+| `install` | No | `string` | Install command. Runs before `dev`, skipped on restart. |
+| `url` | No | `string` | URL for Inspector to connect to. Bypasses stdout detection. |
+| `build` | No | `string` | Build command. |
+| `node` | No | `string` | Node.js version constraint. |
+| `htmlEntry` | No | `string` | Main HTML file for static HTML projects. |
+
+## `dev` behavior by type
+
+- **string** — Run one command. Inspector monitors the process and detects the URL from stdout.
+- **string[]** — Run all commands as concurrent long-running processes. Inspector connects to `url`.
+- **object** — Show a picker. Run only the selected entry.
+
+## Backward compatibility
+
+Inspector reads both `inspector.json` (preferred) and the legacy `.inspector.json` (dotfile) filename. If both exist, `inspector.json` takes priority.
+
+Older field names are also supported:
+
+- `setup` is treated as `install`
+- `run` is treated as `dev`
+- `targets` is treated as `dev` in object form
+
+When saving, Inspector always writes to `inspector.json` using the new field names.
