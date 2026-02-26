@@ -30,27 +30,34 @@ Analyze this project and create an `inspector.json` file at the project root.
 inspector.json tells the Inspector desktop app how to start the dev environment. It has this schema:
 
 Required fields:
-- "dev" (string | string[] | object): The dev server command(s).
+- "dev" (string | DevCommand[]): The dev server command(s).
   - string: a single command, e.g. "npm run dev"
-  - string[]: multiple concurrent long-running processes (must also set "url")
-  - object: monorepo target picker — keys are display names, values are dev commands
+  - DevCommand[]: multiple concurrent processes. Each entry is a string or { cmd, cwd } object.
 
 Optional fields:
-- "install" (string): install/setup command, runs before dev (e.g. "npm install")
+- "install" (string): install/setup command, runs before dev (e.g. "npm install"). Skipped on restart.
+- "predev" (string | DevCommand[]): sequential commands that run every time before dev (e.g. migrations, builds).
+- "cwd" (string): base working directory for all commands (relative to project root).
 - "url" (string): explicit URL to connect to (bypasses stdout auto-detection)
 - "build" (string): build command
 - "node" (string): Node.js version constraint
 - "htmlEntry" (string): main HTML file for static HTML projects
 
+DevCommand format: string or { "cmd": "command", "cwd": "relative/path" }
+
+Execution order: install (once) → predev (every time, sequential) → dev (concurrent if array)
+
 Rules:
 1. Look at package.json scripts, Makefile, docker-compose.yml, and any existing dev tooling.
 2. If there's a single dev command, use a string.
 3. If the project needs background services (databases, etc.) alongside the dev server, use an array and set "url".
-4. For monorepos with multiple startable apps, use an object with descriptive keys.
-5. Only include "install" if there's a meaningful install step (e.g. "pnpm install").
-6. Only include "url" if the dev command won't print a localhost URL to stdout, or if dev is an array.
-7. Write the file as `inspector.json` at the project root.
-8. Keep it minimal — only include fields that are needed.
+4. Only include "install" if there's a meaningful install step (e.g. "pnpm install").
+5. Only include "url" if the dev command won't print a localhost URL to stdout, or if dev is an array.
+6. Use "predev" for commands that must complete before dev starts (e.g. db:migrate, building shared libs).
+7. Use "cwd" when commands should run from a different directory than the project root.
+8. Use per-command cwd ({ cmd, cwd }) when different commands need different working directories.
+9. Write the file as `inspector.json` at the project root.
+10. Keep it minimal — only include fields that are needed.
 </Prompt>
 
 ## Scenarios
@@ -102,20 +109,6 @@ Use `url` when the dev command doesn't print a localhost URL to stdout, or when 
 
 When `dev` is an array, Inspector spawns all commands concurrently as long-running processes. Use `url` to tell Inspector where to connect — it can't auto-detect from multiple processes.
 
-### Monorepo targets
-
-```json
-{
-  "install": "pnpm install",
-  "dev": {
-    "Web App": "pnpm --filter web dev",
-    "Admin Panel": "pnpm --filter admin dev"
-  }
-}
-```
-
-When `dev` is an object, Inspector shows a picker and runs only the selected target. The keys are display names; the values are the dev commands.
-
 ### Existing orchestration
 
 ```json
@@ -127,22 +120,90 @@ When `dev` is an object, Inspector shows a picker and runs only the selected tar
 
 If your project already has a single command that starts everything (e.g., `docker compose`, `foreman`, `overmind`), use it as `dev` and set `url` explicitly.
 
+### Pre-dev commands (migrations, builds)
+
+```json
+{
+  "install": "pnpm install",
+  "predev": [
+    "pnpm run db:migrate",
+    "pnpm run build:shared"
+  ],
+  "dev": "pnpm run dev"
+}
+```
+
+`predev` commands run sequentially every time before `dev` starts. Unlike `install`, they are not skipped on restart. Use this for database migrations, building shared packages, or any setup that might change between runs.
+
+### Per-command working directories
+
+```json
+{
+  "dev": [
+    { "cmd": "docker compose up", "cwd": "../infra" },
+    { "cmd": "pnpm run dev", "cwd": "../api" },
+    "pnpm run dev"
+  ],
+  "url": "http://localhost:3000"
+}
+```
+
+When different services live in different directories, use the `{ cmd, cwd }` object form. Each command runs in its specified working directory. Commands without `cwd` run from the project root.
+
+### Cross-repository setup
+
+```json
+{
+  "cwd": "..",
+  "install": "pnpm install",
+  "predev": [
+    { "cmd": "docker compose up -d", "cwd": "infra" },
+    { "cmd": "pnpm run db:migrate", "cwd": "api" }
+  ],
+  "dev": [
+    { "cmd": "pnpm run dev", "cwd": "api" },
+    { "cmd": "pnpm run dev", "cwd": "web" }
+  ],
+  "url": "http://localhost:3000"
+}
+```
+
+For projects that orchestrate multiple sibling repositories, set `cwd` to change the base directory. Per-command `cwd` values are then relative to this base.
+
+## Working directory
+
+By default, all commands run from the directory containing `inspector.json`. Use `cwd` to change this:
+
+- **Top-level `cwd`**: Sets the base working directory for all commands
+- **Per-command `cwd`**: Use `{ "cmd": "...", "cwd": "..." }` to set a directory for specific commands
+- Per-command `cwd` is resolved relative to the top-level `cwd` (or project root if not set)
+- Absolute paths override all relative resolution
+
 ## Field reference
 
 | Field | Required | Type | Description |
 |-------|----------|------|-------------|
-| `dev` | Yes | `string \| string[] \| object` | The dev server command(s). See scenarios above. |
+| `dev` | Yes | `string \| DevCommand[]` | The dev server command(s). See scenarios above. |
 | `install` | No | `string` | Install command. Runs before `dev`, skipped on restart. |
+| `predev` | No | `string \| DevCommand[]` | Pre-dev commands. Run sequentially every time before `dev`. |
+| `cwd` | No | `string` | Base working directory for all commands. |
 | `url` | No | `string` | URL for Inspector to connect to. Bypasses stdout detection. |
 | `build` | No | `string` | Build command. |
 | `node` | No | `string` | Node.js version constraint. |
 | `htmlEntry` | No | `string` | Main HTML file for static HTML projects. |
 
+**DevCommand**: `string` or `{ "cmd": string, "cwd"?: string }`
+
+## Execution order
+
+1. **install** — Runs once. Skipped on dev server restart.
+2. **predev** — Runs sequentially every time. Each command must complete before the next.
+3. **dev** — Runs concurrently (if array) or as a single process.
+
 ## `dev` behavior by type
 
 - **string** — Run one command. Inspector monitors the process and detects the URL from stdout.
-- **string[]** — Run all commands as concurrent long-running processes. Inspector connects to `url`.
-- **object** — Show a picker. Run only the selected entry.
+- **DevCommand[]** — Run all commands as concurrent long-running processes. Each entry can be a string or `{ cmd, cwd }`. Inspector connects to `url`.
 
 ## Backward compatibility
 
@@ -152,6 +213,5 @@ Older field names are also supported:
 
 - `setup` is treated as `install`
 - `run` is treated as `dev`
-- `targets` is treated as `dev` in object form
 
 When saving, Inspector always writes to `inspector.json` using the new field names.
