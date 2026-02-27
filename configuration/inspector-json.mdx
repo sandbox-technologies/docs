@@ -196,7 +196,7 @@ By default, all commands run from the directory containing `inspector.json`. Use
 
 ## Execution order
 
-1. **install** — Runs once. Skipped on dev server restart.
+1. **install** — Runs once. Skipped entirely when not provided, and skipped on dev server restart.
 2. **predev** — Runs sequentially every time. Each command must complete before the next.
 3. **dev** — Runs concurrently (if array) or as a single process.
 

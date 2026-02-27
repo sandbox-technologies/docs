@@ -30,18 +30,28 @@ Detected from lock files:
 
 ## When Detection Fails
 
-Create `.inspector.json`:
+Create an `inspector.json` at your project root. Only `dev` is required:
 
 ```json
 {
-  "setup": "npm install",
-  "run": "npm run dev"
+  "dev": "npm run dev"
 }
 ```
 
+Add `install` if your project needs a setup step (e.g. `npm install`):
+
+```json
+{
+  "install": "npm install",
+  "dev": "npm run dev"
+}
+```
+
+See [inspector.json reference](/configuration/inspector-json) for the full schema.
+
 ## Node.js Version Priority
 
-1. `.inspector.json` runtimes.node
+1. `inspector.json` `node` field
 2. `.nvmrc`
 3. `.node-version`
 4. `package.json` engines
